@@ -1,33 +1,48 @@
+const Tarea = require('./tarea');
+
 /**
  *  _listado:
- *      {'1b9d6bcd-bbfd-4b2d-9b5d-ab8dfbbd4bed': { id: 12, desc: 'Tarea 12', completadoEn: 01-01-2022}}
+ *      {  'uuid-123712-123123-2: { id:12, desc:asd,completadoeEN:92231 }  },
  */
-const Tarea = require('./tarea');
 
 class Tareas {
 
-    _listado = {};
+    _listado = {
+        'abc': 123
+    };
+
 
     get listadoArr() {
-        const listado = [];
 
-        Object.keys( this._listado ).forEach( key => {
-            listado.push(this._listado[key]);
+        const listado = [];
+        Object.keys(this._listado).forEach( key => {
+            const tarea = this._listado[key];
+            listado.push( tarea );
         });
 
         return listado;
     }
 
+
     constructor() {
         this._listado = {};
     }
 
-    cargarTareasFromArray ( tareas = [] ) {
+    borrarTarea( id = '' ) {
 
+        if ( this._listado[id] ) {
+            delete this._listado[id];
+        }
+
+    }
+
+    cargarTareasFromArray( tareas = [] ) {
+        
         tareas.forEach( tarea => {
             this._listado[tarea.id] = tarea;
         });
     }
+
 
     crearTarea( desc = '' ) {
 
@@ -36,26 +51,31 @@ class Tareas {
     }
 
     listadoCompleto() {
-
+        
+        console.log();
         this.listadoArr.forEach( (tarea, i) => {
+
             const idx = `${i + 1}`.green;
             const { desc, completadoEn } = tarea;
-            const estado = ( completadoEn )
-                                    ? 'Completada'.green
-                                    : 'Pendiente'.red;
+            const estado = ( completadoEn ) 
+                                ? 'Completada'.green
+                                : 'Pendiente'.red;
+
             console.log(`${ idx } ${ desc } :: ${ estado }`);
 
-        });
+        });         
     }
 
-    listarPendientesCompletadas ( completadas = true ) {
+    listarPendientesCompletadas( completadas = true ) {
+
+        console.log();
         let contador = 0;
-        this.listadoArr.forEach( (tarea, i) => {
-            const idx = `${i + 1}`.green;
+        this.listadoArr.forEach( tarea => {
+
             const { desc, completadoEn } = tarea;
-            const estado = ( completadoEn )
-                                    ? 'Completada'.green
-                                    : 'Pendiente'.red;
+            const estado = ( completadoEn ) 
+                                ? 'Completada'.green
+                                : 'Pendiente'.red;
             if ( completadas ) {
                 // mostrar completadas
                 if ( completadoEn ) {
@@ -69,10 +89,35 @@ class Tareas {
                     console.log(`${ (contador + '.').green } ${ desc } :: ${ estado }`);
                 }
             }
-            
+
+        });     
+
+    }
+
+    toggleCompletadas( ids = [] ) {
+
+        ids.forEach( id => {
+
+            const tarea = this._listado[id];
+            if ( !tarea.completadoEn ) {
+                tarea.completadoEn = new Date().toISOString()
+            }
 
         });
+
+        this.listadoArr.forEach( tarea => {
+
+            if ( !ids.includes(tarea.id) ) {
+                this._listado[tarea.id].completadoEn = null;
+            }
+
+        });
+
+
     }
+
 }
+
+
 
 module.exports = Tareas;
